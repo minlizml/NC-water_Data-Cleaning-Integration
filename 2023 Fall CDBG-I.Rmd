@@ -1,0 +1,133 @@
+
+```{r, warning=F, message=FALSE}
+
+setwd("/Users/zhengminli/Desktop/Project 2/Fall/CDBG-I/2023 Fall CDBG-I")
+
+# Create a function to process scorecard data
+  process_scorecard_data <- function(scorecard_file) {
+  # Load the necessary packages
+  library(readxl)
+  library(dplyr)
+  
+  # Read the Excel file
+  Final_scorecard <- read_excel(scorecard_file, sheet = 1)
+  
+  # Create an empty data frame
+  num_rows <- 71
+  columns <- c("File_name","LGU_Name", "Season", "Year", "Grant_type", "Line_Item", 
+               "Description", "Max_points", "Points_claimed",  
+               "Number_of_points_claimed","Reviewer1_Points_claimed","Reviewer1_Numberof_points_claimed")
+  empty_data <- as.data.frame(matrix(NA, nrow = num_rows, ncol = length(columns)))
+  names(empty_data) <- columns
+  
+  #Fill the File_name column of empty_data
+  empty_data$File_name <- rep(scorecard_file, num_rows)
+  
+  # Fill the LGU_Name column of empty_data
+  lgu_name_full <- Final_scorecard[1, 1] # Get the full LGU Name field
+  lgu_name_value <- sub("LGU Name: ", "", lgu_name_full)  # Remove the field name part
+  empty_data$LGU_Name <- rep(lgu_name_value, num_rows) # Assign the processed value to all rows of the 'LGU Name' column
+  
+  # Fill the Season column of empty_data with "Fall"
+  empty_data$Season <- "Fall"
+  
+  # Fill the Year column of empty_data with 2023
+  empty_data$Year <- 2023
+  
+  # Fill the Grant_type column of empty_data with CDBG-I
+  empty_data$Grant_type <- 'CDBG-I'
+  
+  # Fill the Line_Item column of empty_data
+  line_items <- c("1.A", "1.B", "1.C", "1.C.1", "1.E", "1.E.1", "1.E.2", ' ',' ',"2.A", "2.A.1", 
+                  "2.D", "2.E", "2.E.1", "2.E.2", "2.F", "2.F.1", "2.F.2", "2.G", "2.H", "2.H.1", 
+                  "2.H.2", "2.H.3", "2.H.4", "2.J", "2.K", "2.K.1", "2.K.2", "2.L", "2.M", "2.N", 
+                  "2.N.1", "2.N.2", "2.N.3", "2.N.4", "2.N.5", "2.N.6", "2.N.7", "2.S", ' ', ' ', 
+                  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', "3.A", 
+                  "3.A.1", "3.A.2", "3.B", ' ', "3.C", "3.D", ' ', ' ', "4.B", 
+                  "4.B.1", "4.B.2", "4.B.3", "4.B.4", "4.E", "4.F", ' ', ' ')
+  empty_data$Line_Item <- line_items
+  
+  # Fill the Description column of empty_data
+  description_values <- unlist(Final_scorecard[36:106, 2])
+  empty_data$Description <- description_values
+  
+  # Fill the Max_points column of empty_data
+  max_points_values <- unlist(Final_scorecard[36:106, 7])
+  empty_data$Max_points <- max_points_values
+  
+  # Fill the Points_claimed column of empty_data
+  points_claimed_values <- unlist(Final_scorecard[36:106, 8])
+  empty_data$Points_claimed <- points_claimed_values
+  empty_data$Points_claimed[empty_data$Points_claimed == 'Applicant Claimed Points'] <- " "  
+                            # Replace rows   containing 'Applicant Claimed Points' with " "
+ 
+  
+  # Fill the Number_of_points_claimed column of empty_data
+  number_of_points_claimed_values <- unlist(Final_scorecard[36:106, 9])
+  empty_data$Number_of_points_claimed <- number_of_points_claimed_values
+  
+  # Fill the Reviewer1_Points_claimed column of empty_data
+  Reviewer1_Points_claimed <- unlist(Final_scorecard[36:106, 10])
+  empty_data$Reviewer1_Points_claimed <- Reviewer1_Points_claimed
+  empty_data$Reviewer1_Points_claimed[empty_data$Reviewer1_Points_claimed == 'Reviewer #1'] <- " "
+  ## Replace rows that contain 'Reviewer #1' with " "
+  
+  # Fill the Reviewer1_Numberof_points_claimed column of empty_data
+  Reviewer1_Numberof_points_claimed <- unlist(Final_scorecard[36:106, 11])
+  empty_data$Reviewer1_Numberof_points_claimed <- Reviewer1_Numberof_points_claimed
+  
+  # Round numeric columns to two decimal places
+  numeric_columns <- c("Points_claimed", "Number_of_points_claimed", 
+                        "Reviewer1_Points_claimed", "Reviewer1_Numberof_points_claimed")
+  empty_data[, numeric_columns] <- lapply(empty_data[, numeric_columns], 
+                                          function(x) ifelse(is.na(as.numeric(x)), x, round(as.numeric(x), 4)))
+  
+  return(empty_data)
+}
+
+
+
+
+```
+
+
+
+```{r, warning=F, message=FALSE}
+
+# Define a list of file paths
+file_paths <- c(
+  "161143_TaborCity_CDBG Scorecard Fall 2023-JAKT_SYS-FINAL.xlsx",
+  "161234_HighShoals_CDBG Scorecard Fall 2023_CMS_SM-FINAL.xlsx",
+  "161610_Valdese_CDBG Scorecard Fall 2023_SYS_CMS_EKB_JAKT_Ineligible and Incomplete-FINAL.xlsx",
+  "162486_Waynesville_SSS_CDBG Scorecard Fall 2023_SYS_NM_JAKT-FINAL.xlsx",
+  "162491_Waynesville_PWS_CDBG Scorecard Fall 2023_NM_SM_JAKT-FINAL.xlsx",
+  "162706_GreeneCo_CDBG Scorecard Fall 2023_SM_JAKT_EKB-FINAL.xlsx",
+  "162717_HertfordCo_CDBG Scorecard Fall 2023_CMS_EKB_Ineligible and Incomplete-FINAL.xlsx"
+)
+
+# Initialize an empty list to store the processed data frames
+processed_data <- list()
+
+# Loop through the file paths and process each file
+for (file_path in file_paths) {
+  processed_data[[file_path]] <- process_scorecard_data(file_path)
+}
+
+# Combine all processed data frames into one large data frame
+combined_data <- bind_rows(processed_data)
+
+
+# Save 'combined_data' into a excel file
+write.csv(combined_data, "2023 Fall CDBG-I_scorecard_data.csv", row.names = FALSE)
+
+
+```
+
+
+```{r, warning=F, message=FALSE}
+# Use kable() to format the final combined survey as an HTML table
+library(knitr)
+kable(combined_data, format = "html", table.attr = "class='table table-bordered table-hover'")
+```
+
+

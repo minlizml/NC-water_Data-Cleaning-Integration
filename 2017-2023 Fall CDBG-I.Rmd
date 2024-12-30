@@ -1,0 +1,43 @@
+
+
+
+
+
+```{r, warning=F, message=FALSE}
+
+library(readr)
+library(dplyr)
+library(writexl)
+
+# Define file paths
+files <- c("/Users/zhengminli/Desktop/Project 2/Fall/CDBG-I/2023 Fall CDBG-I/2023 Fall CDBG-I_scorecard_data.csv",
+           "/Users/zhengminli/Desktop/Project 2/Fall/CDBG-I/2022 Fall CDBG-I/2022 Fall CDBG-I_scorecard_data.csv",
+           "/Users/zhengminli/Desktop/Project 2/Fall/CDBG-I/2021 Fall CDBG-I/2021 Fall CDBG-I_scorecard_data.csv",
+           "/Users/zhengminli/Desktop/Project 2/Fall/CDBG-I/2020 Fall CDBG-I/2020 Fall CDBG-I_scorecard_data.csv",
+           "/Users/zhengminli/Desktop/Project 2/Fall/CDBG-I/2019 Fall CDBG-I/2019 Fall CDBG-I_scorecard_data.csv",
+           "/Users/zhengminli/Desktop/Project 2/Fall/CDBG-I/2018 Fall CDBG-I/2018 Fall CDBG-I_scorecard_data.csv",
+           "/Users/zhengminli/Desktop/Project 2/Fall/CDBG-I/2017 Fall CDBG-I/2017 Fall CDBG-I_scorecard_data.csv")
+
+# Read and merge 2017-2023—CDBG-I files
+combined_data <- lapply(files, function(file) {
+  read_csv(file, col_types = cols(
+    LGU_Name = col_character(),
+    Season = col_character(),
+    Grant_type = col_character(),
+    Line_Item = col_character(),
+    Description = col_character(),
+    Max_points = col_character(),
+    Points_claimed = col_character(),
+    Reviewer1_Points_claimed = col_character(),
+    Year = col_double(),
+    Number_of_points_claimed = col_double(),
+    Reviewer1_Numberof_points_claimed = col_double()
+  ))
+}) %>% bind_rows()
+
+# Save as an Excel file to retain empty strings
+write_xlsx(combined_data, "/Users/zhengminli/Desktop/Project 2/Fall/CDBG-I/2017-2023_combined_CDBG-I_scorecard_data.xlsx")
+
+
+```
+

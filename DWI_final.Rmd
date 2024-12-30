@@ -1,0 +1,79 @@
+
+
+```{r}
+
+
+library(readxl)
+library(dplyr)
+library(writexl)
+
+# Step 2: Read the Excel files using the paths from the images
+spring_path <- "/Users/zhengminli/Desktop/Project 2/Spring/CDBG-I/2017-2023_Spring_CDBG-I_scorecard_data.xlsx"
+fall_path <- "/Users/zhengminli/Desktop/Project 2/Fall/CDBG-I/2017-2023_combined_CDBG-I_scorecard_data.xlsx"
+
+spring_file <- read_excel(spring_path)
+fall_file <- read_excel(fall_path)
+
+
+# Identify the names of the columns in each dataframe
+columns_spring <- names(spring_file)
+columns_fall <- names(fall_file)
+
+# Find columns that are in both dataframes
+common_columns <- intersect(columns_spring, columns_fall)
+
+# Convert all common columns to character in both dataframes for a safe merge
+for(column_name in common_columns) {
+  spring_file[[column_name]] <- as.character(spring_file[[column_name]])
+  fall_file[[column_name]] <- as.character(fall_file[[column_name]])
+}
+
+# Now try to bind rows
+combined_data <- bind_rows(spring_file, fall_file)
+
+
+# Step 5: Write the combined data to a new Excel file
+combined_file_path <- "/Users/zhengminli/Desktop/Project 2/Final_table/Final_CDBG-I_scorecard_data.xlsx"
+write_xlsx(combined_data, combined_file_path)
+
+
+
+
+```
+
+
+```{r}
+
+# Define the file paths
+fall_drinkingwater_path <- "/Users/zhengminli/Desktop/Project 2/Fall/Fall Drinking Water/2017-2023_combined_drinkingwater_scorecard_data.xlsx"
+fall_wastewater_path <- "/Users/zhengminli/Desktop/Project 2/Fall/Wastewater/2017-2023_combined_Wastewater_scorecard_data.xlsx"
+spring_drinkingwater_path <- "/Users/zhengminli/Desktop/Project 2/Spring/Drinking Water/2017-2023_combined_drinkingwater_scorecard_data.xlsx"
+spring_wastewater_path <- "/Users/zhengminli/Desktop/Project 2/Spring/Wastewater/2017-2023_combined_Wastewater_Spring_scorecard_data.xlsx"
+
+# Read the Excel files
+fall_drinkingwater <- read_excel(fall_drinkingwater_path)
+fall_wastewater <- read_excel(fall_wastewater_path)
+spring_drinkingwater <- read_excel(spring_drinkingwater_path)
+spring_wastewater <- read_excel(spring_wastewater_path)
+
+# Assuming we want to bind the rows together
+# Check if all dataframes have the same columns
+all_columns <- Reduce(intersect, list(names(fall_drinkingwater), names(fall_wastewater), 
+                                      names(spring_drinkingwater), names(spring_wastewater)))
+
+# If not all columns are common, decide which columns to keep or how to reconcile differences
+# For now, we'll assume all columns are the same and proceed with binding rows
+combined_data <- bind_rows(fall_drinkingwater, fall_wastewater, 
+                           spring_drinkingwater, spring_wastewater)
+
+# Define path for the combined file
+combined_file_path <- "/Users/zhengminli/Desktop/Project 2/Final_table/Final_scorecard_data.xlsx"
+
+# Write the combined data to a new Excel file
+write_xlsx(combined_data, combined_file_path)
+
+```
+
+
+
+
