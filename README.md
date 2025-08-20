@@ -1,3 +1,4 @@
 # Data Cleaning&Integration for NC water
 This project, completed during my role as a Data RA at UNC's Environmental Finance Center,focusing on cleaning and integrating raw data from multiple water-related projects, including CDBG-I, Drinking Water, and Wastewater. The data spans from 2014 to 2023 and originates from over 400 Excel files, categorized by Fall and Spring seasons. Using R and various data processing techniques, the raw data was transformed into a single standardized table with 139 columns and 4,463 rows for further analysis.
 <img width="2000" height="1125" alt="image" src="https://github.com/user-attachments/assets/22255808-b5b5-4bc2-89ed-a99cc71e6e68" />
+<img width="2000" height="1125" alt="image" src="https://github.com/user-attachments/assets/c624f2a3-6d49-4746-9652-9e9421896288" />
